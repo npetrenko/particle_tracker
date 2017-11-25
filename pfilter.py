@@ -54,6 +54,6 @@ class ParticleFilter:
         weights = np.exp(self.logweights)
         #print(weights.sum())
         weights /= weights.sum()
-        ix = np.random.choice(np.arange(self.nparticles), size=self.nparticles, p=weights)
+        ix = np.random.choice(np.arange(len(weights)), size=len(weights), p=weights)
         self.particles = self.particles[ix]
         self.logweights = np.zeros_like(self.logweights)

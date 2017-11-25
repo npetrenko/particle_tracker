@@ -27,13 +27,13 @@ class Agent:
     def emmit(self):
         xyxy = list(self.pos) + list(self.pos + self.dim)
         xyxy = np.array(xyxy)
-        xyxy += np.random.normal(size=xyxy.shape)*np.array([self.w, self.h]*2)/8
+        xyxy += np.random.normal(size=xyxy.shape)*np.array([self.w, self.h]*2)/12
         xyxy[3] = max(xyxy[1]+1, xyxy[3])
         xyxy[2] = max(xyxy[0]+1, xyxy[2])
         return xyxy
     
     def step(self):
-        self.vel += np.random.normal(size=2)/4
+        self.vel += np.random.normal(size=2)/8
         self.vel = np.clip(self.vel, -1, 1)
         self.pos += self.vel
         self.pos = np.clip(self.pos, 0, np.array([self.im_x - self.w, self.im_y - self.h]))
