@@ -13,10 +13,10 @@ class ParticleFilter:
         self.particles = np.random.normal(size=[nparticles, hidden_dim])# + np.array([2,0], 'float64')
         self.logweights = np.zeros([nparticles], dtype='float64')
         
-    def step(self, observe):
+    def step(self, observe, beta=None):
         self.step_calls += 1
         
-        new_logweights = self.observe_model(self.particles, observe)
+        new_logweights = self.observe_model(self.particles, observe, beta)
         self.logweights += new_logweights
         self.logweights -= self.logweights.mean()
         self.logweights = np.clip(self.logweights, -20, 20)
