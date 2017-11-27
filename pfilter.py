@@ -1,4 +1,6 @@
 import numpy as np
+import random
+from scipy.special import logsumexp
 
 class ParticleFilter:
     def __init__ (self, nparticles, hidden_dim, evol_model, observe_model, resample_2entropy = 0.1):
@@ -15,21 +17,25 @@ class ParticleFilter:
         
     def step(self, observe, beta=None):
         self.step_calls += 1
-        
-        new_logweights = self.observe_model(self.particles, observe, beta)
-        self.logweights += new_logweights
-        self.logweights -= self.logweights.mean()
-        self.logweights = np.clip(self.logweights, -20, 20)
-        
-        #resample if entropy is too low:
-        weights = np.exp(self.logweights)
-        weights /= weights.sum()
+        #print(len(observe))
+        if len(observe) > 0:
+            new_logweights = self.observe_model(self.particles, observe, beta)
+            self.logweights += new_logweights
+            
+            #print(self.logweights.mean())
+            
+            self.logweights -= logsumexp(self.logweights, b=1/len(self.logweights))#self.logweights.mean()#(self.logweights.min() + self.logweights.max())/2
+            self.logweights = np.clip(self.logweights, -80, 20)
 
-        ent = np.sum(-weights*np.log2(weights))
-        tent = 2**ent
+            #resample if entropy is too low:
+            weights = np.exp(self.logweights)
+            weights /= weights.sum() + 1e-10
 
-        if tent/self.nparticles < self.resample_2entropy:
-            self.resample()
+            ent = np.sum(-weights*np.log2(weights))
+            tent = 2**ent
+
+            if True:#tent/self.nparticles < self.resample_2entropy:
+                self.resample()
         
         self.particles = self.evol_model(self.particles)
         
@@ -52,7 +58,7 @@ class ParticleFilter:
     def resample(self):
         self.resamples += 1
         weights = np.exp(self.logweights)
-        #print(weights.sum())
+        #print('Sum', weights.sum())
         weights /= weights.sum()
         ix = np.random.choice(np.arange(len(weights)), size=len(weights), p=weights)
         self.particles = self.particles[ix]

@@ -4,9 +4,9 @@ import random
 class Env:
     def __init__ (self, *agents):
         self.agents = agents
-    def step(self, see_all=True):
+    def step(self, see_all=False):
         if not see_all:
-            return [a.step().emmit() for a in self.agents if random.random() < 0.7]
+            return [a.step().emmit() for a in self.agents if random.random() < 0.6]
         else:
             return [a.step().emmit() for a in self.agents]
     
@@ -33,7 +33,7 @@ class Agent:
         return xyxy
     
     def step(self):
-        self.vel += np.random.normal(size=2)/8
+        self.vel += np.random.normal(size=2)/12
         self.vel = np.clip(self.vel, -1, 1)
         self.pos += self.vel
         self.pos = np.clip(self.pos, 0, np.array([self.im_x - self.w, self.im_y - self.h]))
