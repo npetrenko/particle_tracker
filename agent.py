@@ -6,7 +6,7 @@ class Env:
         self.agents = agents
     def step(self, see_all=False):
         if not see_all:
-            return [a.step().emmit() for a in self.agents if random.random() < 0.6]
+            return [a.step().emmit() for a in self.agents if random.random() < 0.9]
         else:
             return [a.step().emmit() for a in self.agents]
     
@@ -34,7 +34,16 @@ class Agent:
     
     def step(self):
         self.vel += np.random.normal(size=2)/12
-        self.vel = np.clip(self.vel, -1, 1)
+        self.vel = np.clip(self.vel, -3, 3)
         self.pos += self.vel
-        self.pos = np.clip(self.pos, 0, np.array([self.im_x - self.w, self.im_y - self.h]))
+        
+        if (self.pos[0] < 0) or (self.pos[0] > self.im_x):
+            self.vel[0] *= -1
+            
+        if (self.pos[1] < 0) or (self.pos[1] > self.im_y):
+            self.vel[1] *= -1
+            
+        self.pos = np.clip(self.pos, 0, np.array([self.im_x, self.im_y]))
+        
+        
         return self

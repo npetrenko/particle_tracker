@@ -3,12 +3,12 @@ import random
 from scipy.special import logsumexp
 
 class ParticleFilter:
-    def __init__ (self, nparticles, hidden_dim, evol_model, observe_model, resample_2entropy = 0.1):
+    def __init__ (self, nparticles, hidden_dim, evol_model, observe_model, resample_criterion = 0.1):
         self.nparticles = nparticles
         self.hidden_dim = hidden_dim
         self.evol_model = evol_model
         self.observe_model = observe_model
-        self.resample_2entropy = resample_2entropy
+        self.resample_criterion = resample_criterion
         self.resamples = 0
         self.step_calls = 0
         
@@ -29,12 +29,15 @@ class ParticleFilter:
 
             #resample if entropy is too low:
             weights = np.exp(self.logweights)
-            weights /= weights.sum() + 1e-10
+            weights /= weights.sum() + 1e-20
 
-            ent = np.sum(-weights*np.log2(weights))
-            tent = 2**ent
+            #ent = np.sum(-weights*np.log2(weights))
+            #tent = 2**ent
+            ess = 1/np.sum(weights**2)
+            ess /= self.nparticles
+            print(ess)
 
-            if True:#tent/self.nparticles < self.resample_2entropy:
+            if ess < self.resample_criterion:#tent/self.nparticles < self.resample_2entropy:
                 self.resample()
         
         self.particles = self.evol_model(self.particles)
