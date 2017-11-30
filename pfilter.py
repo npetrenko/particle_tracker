@@ -35,7 +35,6 @@ class ParticleFilter:
             #tent = 2**ent
             ess = 1/np.sum(weights**2)
             ess /= self.nparticles
-            print(ess)
 
             if ess < self.resample_criterion:#tent/self.nparticles < self.resample_2entropy:
                 self.resample()
