@@ -7,7 +7,7 @@ class Env:
     def step(self, see_all=False):
         if not see_all:
             [a.step() for a in self.agents]
-            return [a.emmit() for a in self.agents if random.random() < 0.5]
+            return [a.emmit() for a in self.agents if random.random() < 0.8]
         else:
             return [a.step().emmit() for a in self.agents]
     
